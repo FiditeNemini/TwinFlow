@@ -9,6 +9,10 @@
 
 </div>
 
+## News
+
+- We release **TwinFlow-Qwen-Image-v1.0**! And we are also working on **Z-Image-Turbo to make it more faster!**
+
 ## TwinFlow
 
 Checkout 2-NFE visualization of TwinFlow-Qwen-Image 👇
