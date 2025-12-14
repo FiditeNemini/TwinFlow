@@ -27,7 +27,7 @@ def get_args():
     parser.add_argument('--estimate_order', type=int, default=2, help='Estimate order for RCGM loss')
     parser.add_argument('--ema_decay_rate', type=float, default=0.99, help='EMA decay rate')
     parser.add_argument('--enhanced_ratio', type=float, default=0.5, help='Training time CFG ratio')
-    parser.add_argument('--using_twinflow', type=bool, default=True, help='If using TwinFlow loss (or only RCGM loss)')
+    parser.add_argument('--using_twinflow', action='store_true', help='If using TwinFlow loss (or only RCGM loss)')
     
     # --- Miscellaneous ---
     parser.add_argument('--seed', type=int, default=42, help='Random seed')
