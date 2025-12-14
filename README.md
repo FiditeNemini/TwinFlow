@@ -63,11 +63,17 @@ To verify this flexibility, try our method directly on the MNIST tutorials (rand
 
 <div align="center">
   <img src="assets/case1.jpg" width="1000" />
+  <p style="margin-top: 16px; font-size: 14px; color: #666; font-weight: bold; max-width: 1000px;">
+    Case 1: 万里长城秋景，蜿蜒盘踞于层峦叠嶂的山脉之上，砖石城墙与烽火台在暖阳下呈现古朴的土黄色，山间枫叶如火般绚烂，游客点缀其间，远山薄雾缭绕，天空湛蓝飘着几朵白云，高角度全景构图，细节丰富，光影柔和。
+  </p>
 </div>
+
+---
 
 <div align="center">
   <img src="assets/case2.jpg" width="1000" />
   <p style="margin-top: 16px; font-size: 14px; color: #666; font-weight: bold; max-width: 1000px;">
+    Case2: 超高清壁纸, 梦幻光影, 少女在元宵灯会中回眸一笑, 提着一盏兔子花灯, 周围挂满明亮的灯笼, 暖色调灯光映照在脸上, 华丽的唐装, 繁复的头饰, 热闹的背景虚化, 焦外光斑美丽, 中景镜头。<br>
     Top to bottom: same prompt but different noise (left to right). Shown are: Qwen-Image (50×2 NFE), TwinFlow-Qwen-Image (1-NFE), and Qwen-Image-Lightning-v2.0 (1-NFE).<br>TwinFlow-Qwen-Image generates high-quality images at 1-NFE while preserving strong diversity.
   </p>
 </div>
