@@ -44,7 +44,7 @@ To verify this flexibility, try our method directly on the MNIST tutorials (rand
 
 - [x] Release inference and sampler code for TwinFlow-Qwen-Image-v1.0.
 - [x] Release training tutorials on MNIST for understanding.
-- [ ] Release training code on SD3.5.
+- [x] Release training code on SD3.5 and OpenUni.
 - [ ] Release faster Z-Image-Turbo.
 - [ ] Release large-scale training code.
 
