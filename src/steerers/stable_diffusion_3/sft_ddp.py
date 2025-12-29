@@ -308,6 +308,10 @@ def main(_):
 
                 scaled_loss = loss / effective_grad_accum_steps
                 scaled_loss.backward()
+                
+            for param in wrapped_model.parameters():
+                if param.grad is not None:
+                    torch.nan_to_num_(param.grad, nan=0.0, posinf=0.0, neginf=0.0)
 
             grad_norm = 0.0
             if is_sync_step:
