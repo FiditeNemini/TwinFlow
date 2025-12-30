@@ -4,7 +4,6 @@ from diffusers import (
     ZImagePipeline,
     ZImageTransformer2DModel
 )
-from peft import PeftModel
 from .transformer_z_image import ZImageTransformer2DModelWrapper
 
 from services.tools import create_logger
@@ -153,7 +152,6 @@ class ZImage(torch.nn.Module):
         imgs_dtype=torch.bfloat16,
         max_sequence_length=1024,
         device="cuda",
-        lora_id=None,
     ) -> None:
         super().__init__()
 
@@ -175,12 +173,6 @@ class ZImage(torch.nn.Module):
             self.model = ZImagePipeline.from_pretrained(model_id, torch_dtype=imgs_dtype, transformer=z_image_transformer)
         else:
             raise ValueError(f"Unknown model type: {model_type}")
-
-        self.model.transformer.set_attention_backend("flash")    
-        if lora_id is not None:
-            self.model.transformer = PeftModel.from_pretrained(
-                self.model.transformer, lora_id, is_trainable=False
-            )
 
         self.transformer = GenTransformer(
             self.model.transformer, self.model.vae_scale_factor, self.aux_time_embed
