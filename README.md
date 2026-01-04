@@ -25,7 +25,7 @@
 <summary>👇 WeChat Group QR Code/微信群二维码 👇</summary>
 
 <div align="center">
-  <img src="./assets/wechat.png" width="1000" />
+  <img src="./assets/wechat.png" width="300" />
   <p style="margin-top: 8px; font-size: 14px; color: #666; font-weight: bold;">
   </p>
 </div>
