@@ -21,14 +21,11 @@
 
 **Join the WeChat Group, feel free to reach out anytime if you have any questions!👇**
 
-<details>
-<summary>👇 WeChat Group QR Code/微信群二维码 👇</summary>
+<p>👇 WeChat Group QR Code/微信群二维码 👇</p>
 
-<div align="center">
-  <img src="./assets/wechat.png" width="300" />
-  <p style="margin-top: 8px; font-size: 14px; color: #666; font-weight: bold;">
-  </p>
-</div>
+| Technical Discussion Group/技术讨论群 | Model Users Discussion Group/AIGC模型使用讨论群 |
+|----------------------------|------------------------------------------|
+| <img src="./assets/wechat.png" style="width: 70%;" /> | <img src="./assets/wechat2.png" style="width: 70%;" /> |
 
 </details>
 
