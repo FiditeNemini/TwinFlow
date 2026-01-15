@@ -159,14 +159,14 @@ scripts/sd3/train_ddp_lora.sh configs/sd_task/sd35_lora_2order.yaml
 scripts/qwenimage/train_fsdp.sh configs/qwenimage_task/qwenimage_full.yaml
 ```
 
-> [!NOTE]Note on EMA
+> [!NOTE]
 > Due to memory limit, we did not add separate EMA for QwenImage, thus, we set `ema_decay_rate: 0` in the config. Users could switch FSDP2, which could fully support this.
 > https://github.com/inclusionAI/TwinFlow/blob/ab5808dfbbc7b3c5712d73652021e7318c93a39b/src/steerers/qwenimage/sft_fsdp.py#L132-L136
 
-> [!NOTE]Note on LoRA Training
+> [!NOTE]
 > Switch to LoRA training is easy, we suggest you to refer to `src/steerers/stable_diffusion_3/sft_ddp_lora.py` to add LoRA, and set the method config like `configs/sd_task/sd35_lora_1order.yaml` or `configs/sd_task/sd35_lora_2order.yaml`
 
-> [!NOTE]Note on QwenImage-Edit Training
+> [!NOTE]
 > Current modeling supports single reference image input for editing, you need to modify minor code to support edit training.
 
 1. In the config, change `QwenImage` to `QwenImageEdit`.
