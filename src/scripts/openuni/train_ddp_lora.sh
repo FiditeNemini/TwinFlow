@@ -29,4 +29,4 @@ TORCH_DISTRIBUTED_DEBUG=DETAIL
 
 torchrun --nnodes=$NNODES --nproc-per-node $NPROC_PER_NODE --node-rank $NODE_RANK \
   --master-addr=$MASTER_ADDR --master-port=$MASTER_PORT \
-  steerers/openuni/sft_ddp.py $CONFIG_PATH
+  steerers/openuni/sft_ddp_lora.py $CONFIG_PATH
