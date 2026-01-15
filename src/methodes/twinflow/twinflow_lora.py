@@ -7,7 +7,7 @@ import numpy as np
 from torch import nn
 import torch.nn.functional as F
 
-from services.utils import update_ema
+from services.utils import update_ema_lora
 from services.tools import create_logger
 
 logger = create_logger(__name__)
@@ -120,7 +120,9 @@ class TwinFlow(torch.nn.Module):
     ):
         # 1. Init time and containers
         bsz, device = x.shape[0], x.device
-        assert bsz >= 4 # we need minimal batch=4 to assign different target time, see L132
+        assert (
+            bsz >= 4
+        )  # we need minimal batch=4 to assign different target time, see L132
         t = self.sample_beta(self.tdc[0], self.tdc[1], x).clamp_(0, 1) * self.tdc[2]
         c = [torch.zeros_like(t)] if c is None else c
         e = [torch.zeros_like(t)] if e is None else e
@@ -130,6 +132,7 @@ class TwinFlow(torch.nn.Module):
         t_min = t - torch.rand_like(t) * t * min(0.05, self.cor)
 
         probs = {"e2e": 1, "mul": 1, "any": 1, "adv": 1}
+        # probs = {"e2e": 0, "mul": 1, "any": 0, "adv": 0}
         # 3. Partition batch & Create masks
         keys, vals = list(probs.keys()), list(probs.values())
         lens = [int(round(bsz * v / (sum(vals) or 1))) for v in vals]
@@ -265,14 +268,25 @@ class TwinFlow(torch.nn.Module):
         model: nn.Module,
     ):
         if self.emd > 0.0 and self.emd < 1.0:
-            assert hasattr(model, "ema_transformer")
-            self.mod = self.mod or model.ema_transformer
-            update_ema(self.mod, model.transformer, decay=self.cmd)
+            self.mod = self.mod or self.mod_ema
+            update_ema_lora(model.transformer, decay=self.cmd)
             self.cmd += (1 - self.cmd) * (self.emd - self.cmd) * 0.5
         elif self.emd == 0.0:
             self.mod = model.transformer
         elif self.emd == 1.0:
-            self.mod = model.ema_transformer
+            self.mod = self.mod_original
+
+    def mod_ema(self, *args, **kwargs):
+        self.model.transformer.module.set_adapter("old")
+        outputs = self.model(*args, **kwargs)
+        self.model.transformer.module.set_adapter("default")
+        return outputs
+
+    def mod_original(self, *args, **kwargs):
+        with self.model.transformer.module.disable_adapter():
+            outputs = self.model(*args, **kwargs)
+        self.model.transformer.module.set_adapter("default")
+        return outputs
 
     @torch.no_grad()
     def dist_match(
@@ -302,6 +316,7 @@ class TwinFlow(torch.nn.Module):
         step: int,
         v: torch.Tensor,
     ):
+        self.model = model
         with torch.no_grad():
             x_t, t, tt, c, e, target, sample_masks = self.prepare_inputs(model, x, c, e)
 
@@ -378,7 +393,8 @@ class TwinFlow(torch.nn.Module):
         dent = -1
         q = torch.ones(x_t.size(0), device=x_t.device) * (t).flatten()
         q = q if self.integ_st == 1 else 1 - q
-        F_t = (-1) ** (1 - self.integ_st) * model(x_t, t=q, tt=tt, **model_kwargs)
+        # NOTE: when using lora, you could use a single t-tt/2 to approximate 2 time embedders
+        F_t = (-1) ** (1 - self.integ_st) * model(x_t, t=q - tt / 2, **model_kwargs)
         t = torch.abs(t)
         z_hat = (x_t * self.gamma_to(t) - F_t * self.gamma_in(t)) / dent
         x_hat = (F_t * self.alpha_in(t) - x_t * self.alpha_to(t)) / dent
