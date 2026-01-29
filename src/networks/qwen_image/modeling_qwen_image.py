@@ -9,6 +9,11 @@ from diffusers import (
     QwenImageEditPlusPipeline,
     QwenImageTransformer2DModel,
 )
+from diffusers.pipelines.qwenimage.pipeline_qwenimage_edit_plus import (
+    CONDITION_IMAGE_SIZE,
+    VAE_IMAGE_SIZE,
+    calculate_dimensions,
+)
 
 from .transformer_qwenimage import QwenImageTransformer2DModelWrapper
 
@@ -311,14 +316,31 @@ class QwenImage(torch.nn.Module):
                 del prompt_embeds_, prompt_attention_mask_
             elif self.model_type == "edit":
                 input_args["prompt"] = prompt
-                input_args["image"] = image
+                cond_width, cond_height = calculate_dimensions(
+                    CONDITION_IMAGE_SIZE, image.shape[-1] / image.shape[-2]
+                )
+                cond_image = F.interpolate(
+                    image,
+                    (cond_height, cond_width),
+                    mode="bilinear",
+                    align_corners=False,
+                )
+                input_args["image"] = cond_image
                 prompt_embeds, prompt_attention_mask = self.model.encode_prompt(
                     **input_args
                 )
                 input_args["prompt"] = len(prompt) * ["Edit this image."]
-                input_args["image"] = image
+                input_args["image"] = cond_image
                 neg_prompt_embeds, neg_prompt_attention_mask = self.model.encode_prompt(
                     **input_args
+                )
+                print(
+                    "prompt_embeds",
+                    prompt_embeds.shape,
+                    prompt_attention_mask.sum(dim=1),
+                    "neg_prompt_embeds",
+                    neg_prompt_embeds.shape,
+                    neg_prompt_attention_mask.sum(dim=1),
                 )
                 max_len = max(prompt_embeds.shape[1], neg_prompt_embeds.shape[1])
                 if prompt_embeds.shape[1] < max_len:
@@ -434,7 +456,7 @@ class QwenImage(torch.nn.Module):
                     torch.randn(
                         [
                             1,
-                            self.transformer.module.in_channels if hasattr(self.transformer, "module") else self.transformer.in_channels,
+                            self.transformer.in_channels,
                             height // self.model.vae_scale_factor,
                             width // self.model.vae_scale_factor,
                         ],
@@ -449,7 +471,7 @@ class QwenImage(torch.nn.Module):
             noise = torch.randn(
                 [
                     len(prompts) * times,
-                    self.transformer.module.in_channels if hasattr(self.transformer, "module") else self.transformer.in_channels,
+                    self.transformer.in_channels,
                     height // self.model.vae_scale_factor,
                     width // self.model.vae_scale_factor,
                 ],
